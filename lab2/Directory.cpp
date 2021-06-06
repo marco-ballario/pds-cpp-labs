@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Directory.h"
 
+long Count::count = 0;
 Directory *Directory::root = nullptr;
 
 Directory::Directory(std::string name, Directory *father) {
@@ -67,11 +68,23 @@ bool Directory::remove(const std::string &name) {
 }
 
 bool Directory::move(const std::string &name, Directory *target) {
-    return false;
+    if (this->children.count(name) == 0)
+        return false;
+    if (target->children.count(name) != 0)
+        return false;
+    target->children[name] = this->children[name];
+    target->children[name]->setFather(target);
+    this->children.erase(name);
+    return true;
 }
 
 bool Directory::copy(const std::string &name, Directory *target) {
-    return false;
+    if (this->children.count(name) == 0)
+        return false;
+    if (target->children.count(name) != 0)
+        return false;
+    target->addDirectory(name);
+    return true;
 }
 
 void Directory::ls(int indent) {
@@ -83,6 +96,8 @@ void Directory::ls(int indent) {
     }
 }
 
-
+void Directory::setFather(Directory *f) {
+    this->father = f;
+}
 
 
