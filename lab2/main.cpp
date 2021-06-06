@@ -1,5 +1,12 @@
 #include <iostream>
-#include "Directory.h"
+#include <string>
+#include <filesystem>
+#include "Directory1.h"
+#include "Directory2.h"
+
+namespace fs = std::filesystem;
+
+Directory2 *Directory2::root = nullptr;
 
 // ESEMPIO EREDITARIETÀ
 /*
@@ -16,20 +23,33 @@ public:
 };
 */
 
-void simpleExample();
-void complexExample();
+void part1();
+void simpleExample1();
+void complexExample1();
+void part2();
+void simpleExample2();
+void complexExample2();
 
 int main() {
 
-    //simpleExample();
-    complexExample();
-
+    //part1();
+    part2();
 
     return 0;
 }
 
-void simpleExample() {
-    Directory* root = Directory::getRoot();
+void part1(){
+    //simpleExample1();
+    complexExample1();
+}
+
+void part2(){
+    //simpleExample2();
+    complexExample2();
+}
+
+void simpleExample1() {
+    Directory1* root = Directory1::getRoot();
     auto alfa = root->addDirectory("alfa");
     root->addDirectory("beta")->addDirectory("beta1");
     root->getDir("beta")->addDirectory("beta2");
@@ -39,8 +59,8 @@ void simpleExample() {
     delete root;
 }
 
-void complexExample() {
-    Directory* root = Directory::getRoot();
+void complexExample1() {
+    Directory1* root = Directory1::getRoot();
     auto alfa = root->addDirectory("alfa");
     root->addDirectory("beta")->addDirectory("beta1");
     root->getDir("beta")->addDirectory("beta2");
@@ -55,4 +75,43 @@ void complexExample() {
     std::cout << "MOVE" <<std::endl;
     root->getDir("beta")->move("beta2", root->getDir("alfa"));
     root->ls(4);
+
+    delete root;
+}
+
+
+void simpleExample2() {
+    Directory2* root = Directory2::getRoot();
+    auto alfa = root->addDirectory("alfa");
+    root->addDirectory("beta")->addDirectory("beta1");
+    root->getDirectory("beta")->addDirectory("beta2");
+    alfa->getDirectory("..")->ls(4);
+    root->remove("beta");
+    alfa->addFile("gamma",1024,1024);
+    alfa->addFile("epsilon",1024,1024);
+    alfa->addFile("sigma",1024,1024);
+    root->ls(4);
+    delete root;
+}
+
+// TO DO (non così importante)
+// manca la gestione di sottocartelle del filesystem reale
+// per ora si considera un solo livello di directory_entry
+void complexExample2() {
+
+    Directory2* root = Directory2::getRoot();
+
+    std::string path = "/home/marco-ballario/Scrivania/";
+    for (const auto & entry : fs::recursive_directory_iterator(path)) {
+        std::cout << entry.path().parent_path().filename() << " contiene " << entry.path().filename() << std::endl;
+        if (entry.is_directory() == true) {
+            root->addDirectory(entry.path().filename());
+        } else {
+            auto time = static_cast<uintmax_t>(last_write_time(entry.path()).time_since_epoch().count());
+            root->addFile(entry.path().filename(), file_size(entry.path()), time);
+        }
+    }
+
+    root->ls(4);
+    delete root;
 }

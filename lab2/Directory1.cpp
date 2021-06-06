@@ -1,63 +1,47 @@
 #include <iostream>
-#include "Directory.h"
+#include "Directory1.h"
 
 long Count::count = 0;
-Directory *Directory::root = nullptr;
+Directory1 *Directory1::root = nullptr;
 
-Directory::Directory(std::string name, Directory *father) {
+Directory1::Directory1(std::string name, Directory1 *father) {
     std::cout << "Creo: " << name << ", indirizzo: " << (void *)this << ", padre: " << (void *)father << std::endl;
     this->name = name;
     this->father = father;
     this->children.clear();
 }
 
-Directory::Directory(const Directory &source) {
-
-}
-
-Directory::Directory(Directory &&source) {
-
-}
-
-Directory::~Directory() {
+Directory1::~Directory1() {
     std::cout << "Distruggo: " << this->getName() << ", indirizzo: " << (void *)this << ", padre: " << (void *)father << std::endl;
     for( const auto& child : this->children ) {
         delete child.second;
     }
 }
-/*
-Directory &Directory::operator=(const Directory &source) {
-    return <#initializer#>;
-}
 
-Directory &Directory::operator=(Directory &&source) {
-    return <#initializer#>;
-}
-*/
-std::string Directory::getName() const {
+std::string Directory1::getName() const {
     return this->name;
 }
 
-Directory *Directory::getRoot() {
+Directory1 *Directory1::getRoot() {
     if (root == nullptr)
-        root = new Directory("/", nullptr);
+        root = new Directory1("/", nullptr);
     return root;
 }
 
-Directory *Directory::addDirectory(const std::string &name) {
+Directory1 *Directory1::addDirectory(const std::string &name) {
     if (this->children.count(name) != 0)
         return this->children[name];
-    this->children[name] = new Directory(name, this);
+    this->children[name] = new Directory1(name, this);
     return this->children[name];
 }
 
-Directory *Directory::getDir(const std::string &name) {
+Directory1 *Directory1::getDir(const std::string &name) {
     if(name.compare("..") == 0)
         return this->father;
     return this->children[name];
 }
 
-bool Directory::remove(const std::string &name) {
+bool Directory1::remove(const std::string &name) {
     if (this->children.count(name) != 0) {
         delete this->children[name];
         this->children.erase(name);
@@ -67,7 +51,7 @@ bool Directory::remove(const std::string &name) {
     }
 }
 
-bool Directory::move(const std::string &name, Directory *target) {
+bool Directory1::move(const std::string &name, Directory1 *target) {
     if (this->children.count(name) == 0)
         return false;
     if (target->children.count(name) != 0)
@@ -78,7 +62,7 @@ bool Directory::move(const std::string &name, Directory *target) {
     return true;
 }
 
-bool Directory::copy(const std::string &name, Directory *target) {
+bool Directory1::copy(const std::string &name, Directory1 *target) {
     if (this->children.count(name) == 0)
         return false;
     if (target->children.count(name) != 0)
@@ -87,7 +71,7 @@ bool Directory::copy(const std::string &name, Directory *target) {
     return true;
 }
 
-void Directory::ls(int indent) {
+void Directory1::ls(int indent) {
     std::cout << "[+] " << this->getName() << std::endl;
     for( const auto& child : this->children ) {
         for (int i=0; i<indent; i++)
@@ -96,8 +80,6 @@ void Directory::ls(int indent) {
     }
 }
 
-void Directory::setFather(Directory *f) {
+void Directory1::setFather(Directory1 *f) {
     this->father = f;
 }
-
-
