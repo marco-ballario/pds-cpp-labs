@@ -3,10 +3,12 @@
 #include <filesystem>
 #include "Directory1.h"
 #include "Directory2.h"
+#include "Directory3.h"
 
 namespace fs = std::filesystem;
 
 Directory2 *Directory2::root = nullptr;
+std::shared_ptr<Directory3> Directory3::root = nullptr;
 
 // ESEMPIO EREDITARIETÀ
 /*
@@ -29,11 +31,13 @@ void complexExample1();
 void part2();
 void simpleExample2();
 void complexExample2();
+void part3();
 
 int main() {
 
     //part1();
-    part2();
+    //part2();
+    part3();
 
     return 0;
 }
@@ -46,6 +50,19 @@ void part1(){
 void part2(){
     //simpleExample2();
     complexExample2();
+}
+
+void part3(){
+    shared_ptr<Directory3> root = Directory3::getRoot();
+    auto alfa = root->addDirectory("alfa");
+    root->addDirectory("beta")->addDirectory("beta1");
+    root->getDirectory("beta")->addDirectory("beta2");
+    alfa->getDirectory("..")->ls(4);
+
+    cout<<"----"<<endl;
+
+    root->remove("beta");
+    root->ls(4);
 }
 
 void simpleExample1() {

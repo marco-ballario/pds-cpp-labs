@@ -1,11 +1,11 @@
 #pragma once
 #include <iostream>
 
-enum MType {
-    TDir2=0, TFile2=1
+enum MType3 {
+    TDir3=0, TFile3=1
 };
 
-class Base2 {
+class Base3 {
 protected:
     std::string name;
 public:

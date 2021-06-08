@@ -11,10 +11,10 @@ Directory2::Directory2(std::string name, Directory2 *father) {
 Directory2::~Directory2() {
     std::cout << "Distruggo: " << this->getName() << ", indirizzo: " << (void *)this << ", padre: " << (void *)father << std::endl;
     for( const auto& child : this->children ) {
-        if (child.second->mType() == TDir)
+        if (child.second->mType() == TDir2)
             delete dynamic_cast<Directory2*>(child.second);
-        else if (child.second->mType() == TFile)
-            delete dynamic_cast<File*>(child.second);
+        else if (child.second->mType() == TFile2)
+            delete dynamic_cast<File2*>(child.second);
     }
 }
 
@@ -26,9 +26,9 @@ Directory2* Directory2::getRoot() {
 
 Directory2* Directory2::addDirectory(const std::string &name) {
     if (this->children.count(name) != 0){
-        if (this->children[name]->mType() == TDir)
+        if (this->children[name]->mType() == TDir2)
             return dynamic_cast<Directory2*>(this->children[name]);
-        if (this->children[name]->mType() == TFile)
+        if (this->children[name]->mType() == TFile2)
             return nullptr;
     }
     this->children[name] = new Directory2(name, this);
@@ -36,14 +36,14 @@ Directory2* Directory2::addDirectory(const std::string &name) {
 
 }
 
-File* Directory2::addFile(const std::string &name, uintmax_t size, uintmax_t date) {
+File2* Directory2::addFile(const std::string &name, uintmax_t size, uintmax_t date) {
     if (this->children.count(name) != 0)
         return nullptr;
-    this->children[name] = new File(name, size, date);
-    return dynamic_cast<File*>(this->children[name]);
+    this->children[name] = new File2(name, size, date);
+    return dynamic_cast<File2*>(this->children[name]);
 }
 
-Base* Directory2::get(const std::string &name){
+Base2* Directory2::get(const std::string &name){
     if(name.compare("..") == 0)
         return this->father;
     return this->children[name];
@@ -55,8 +55,8 @@ Directory2* Directory2::getDirectory(const std::string &name) {
     return dynamic_cast<Directory2*>(this->children[name]);
 }
 
-File* Directory2::getFile(const std::string &name) {
-    return dynamic_cast<File*>(this->children[name]);
+File2* Directory2::getFile(const std::string &name) {
+    return dynamic_cast<File2*>(this->children[name]);
 }
 
 bool Directory2::remove(const std::string &name) {

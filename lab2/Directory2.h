@@ -13,16 +13,16 @@ public:
     void setFather(Directory2 *father);
 
     int mType() const override {
-        return TDir;
+        return TDir2;
     }
     void ls(int indent) const override {
         std::cout << "[+] " << this->getName() << std::endl;
         for( const auto& child : this->children ) {
             for (int i=0; i<indent; i++)
                 std::cout << " ";
-            if(child.second->mType() == TDir)
+            if(child.second->mType() == TDir2)
                 child.second->ls(indent+indent);
-            if(child.second->mType() == TFile)
+            if(child.second->mType() == TFile2)
                 child.second->ls(0);
         }
     };

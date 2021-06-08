@@ -2,21 +2,22 @@
 #include <cstdint>
 #include <iostream>
 
-class File2 : public Base2{
-    uintmax_t size, date;
+class File3 : public Base3{
+    uintmax_t size;
 public:
-    File2(std::string myname, uintmax_t mysize, uintmax_t mydate) : size(mysize), date(mydate){
+    File3(std::string myname, uintmax_t mysize) : size(mysize) {
+        std::cout << "Creo: " << this->getName() << std::endl;
         this->name = myname;
     };
-    ~File2() {
-        std::cout << "Distruggo: " << this->getName() << ", indirizzo: " << (void *)this << std::endl;
-    }
+
+    ~File3() {
+        std::cout << "Distruggo: " << this->getName() << std::endl;
+    };
 
     uintmax_t getSize() const { return this->size; };
-    uintmax_t getDate() const { return this->date; };
 
     int mType() const override {
-        return TFile2;
+        return TFile3;
     };
     void ls(int indent) const override {
         for(int i=0; i<indent; i++)
