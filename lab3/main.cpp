@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 // ES 1
 
@@ -27,6 +28,7 @@ class MyClass {
 public:
     MyClass(){ std::cout << "MyClass" << std::endl; };
     ~MyClass(){ std::cout << "~MyClass" << std::endl; };
+    void doMyThing(){ std::cout << "YEET!" << std::endl; }
 };
 
 class TipoGenerico {
@@ -35,6 +37,7 @@ public:
     TipoGenerico(): count(0){};
     uint getCount() { return count; };
     void incCount() { count++; };
+    void decCount() { count--; };
 };
 
 template <class T>
@@ -48,35 +51,61 @@ public:
         counter->incCount();
     }
     my_shared(const my_shared<T> &sp){
-
+        ref = sp.ref;
+        counter = sp.counter;
+        counter->incCount();
     };
     ~my_shared(){
-        if(this->use_count() == 1){
-            this->counter = 0;
-            delete counter;
-            delete ref;
+        if(ref != nullptr && counter != nullptr) {
+            counter->decCount();
+            if (this->use_count() == 0) {
+                delete counter;
+                delete ref;
+            }
         }
     };
     T* operator->(){
-        return *ref;
-    }
-    T& operator*(){
         return ref;
     }
+    T& operator*(){
+        return *ref;
+    }
     my_shared<T> &operator=(const my_shared<T> &other){
-        ref = *other;
-        counter = other.getCounter();
+        std::cout << "copy = operator" << std::endl;
+        if(this != &other) {
+            if (ref != other.ref) {
+                counter->decCount();
+                if (this->use_count() == 0) {
+                    delete ref;
+                    delete counter;
+                }
+                ref = other.ref;
+                counter = other.counter;
+                counter->incCount();
+            }
+        }
+        return *this;
     }
     my_shared<T> &operator=(my_shared<T> &&other){
-
+        std::cout << "movement = operator" << std::endl;
+        if(this != &other) {
+            if (ref != other.ref) {
+                counter->decCount();
+                if (this->use_count() == 0) {
+                    delete ref;
+                    delete counter;
+                }
+                ref = other.ref;
+                counter = other.counter;
+                other.counter = nullptr;
+                other.ref = nullptr;
+            }
+        }
+        return *this;
     }
     uint use_count(){
-        return counter->getCount();
+        return counter == nullptr ? 0 : counter->getCount();
     }
-    TipoGenerico* getCounter(){
-        return counter;
-    }
-
 };
 
 void es1();
@@ -98,7 +127,59 @@ void es1(){
 }
 
 void es2(){
-    my_shared<MyClass> ms1 = my_shared<MyClass>(new MyClass());
-    //my_shared<MyClass> ms2 = my_shared<MyClass>(ms1);
+
+    // test constructors and operators
+    my_shared<MyClass> msp1 = my_shared<MyClass>(new MyClass());
+    my_shared<MyClass> msp2 = my_shared<MyClass>(msp1);
+    std::cout << msp2.use_count() << std::endl;
+    msp1->doMyThing();
+    (*msp2).doMyThing();
+
+    // test copy = operator
+    my_shared<MyClass> msp3 = my_shared<MyClass>(new MyClass());
+    my_shared<MyClass> msp4 = my_shared<MyClass>(new MyClass());
+    std::cout << msp3.use_count() << std::endl;
+    std::cout << msp4.use_count() << std::endl;
+    msp3 = msp4;
+    std::cout << msp3.use_count() << std::endl;
+    std::cout << msp4.use_count() << std::endl;
+
+    // test = movement operator
+    my_shared<MyClass> msp5 = my_shared<MyClass>(new MyClass());
+    my_shared<MyClass> msp6 = my_shared<MyClass>(new MyClass());
+    my_shared<MyClass> msp7 = my_shared<MyClass>(msp6);
+    std::cout << msp5.use_count() << std::endl;
+    std::cout << msp6.use_count() << std::endl;
+    std::cout << msp7.use_count() << std::endl;
+    msp5 = std::move(msp6);
+    std::cout << msp5.use_count() << std::endl;
+    std::cout << msp6.use_count() << std::endl;
+    std::cout << msp7.use_count() << std::endl;
+
+    /* BAD CODE */
+    //MyClass *mc = new MyClass();
+    //std::shared_ptr<MyClass> sp1 = std::shared_ptr<MyClass>(mc);
+    //std::shared_ptr<MyClass> sp2 = std::shared_ptr<MyClass>(mc);
+
+    /* TEST COPY ASSIGNMENT OPERATOR *//*
+    std::shared_ptr<MyClass> sp1 = std::shared_ptr<MyClass>(new MyClass());
+    std::shared_ptr<MyClass> sp2 = std::shared_ptr<MyClass>(new MyClass());
+    std::cout << sp1.use_count() << std::endl;
+    std::cout << sp2.use_count() << std::endl;
+    sp1 = sp2;
+    std::cout << sp1.use_count() << std::endl;
+    std::cout << sp2.use_count() << std::endl;*/
+
+    /* TEST MOVEMENT ASSIGNMENT OPERATOR *//*
+    std::shared_ptr<MyClass> sp3 = std::shared_ptr<MyClass>(new MyClass());
+    std::shared_ptr<MyClass> sp4 = std::shared_ptr<MyClass>(new MyClass());
+    std::shared_ptr<MyClass> sp5 = std::shared_ptr<MyClass>(sp4);
+    std::cout << sp3.use_count() << std::endl;
+    std::cout << sp4.use_count() << std::endl;
+    std::cout << sp5.use_count() << std::endl;
+    sp3 = std::move(sp4);
+    std::cout << sp3.use_count() << std::endl;
+    std::cout << sp4.use_count() << std::endl;
+    std::cout << sp5.use_count() << std::endl;*/
 
 }
