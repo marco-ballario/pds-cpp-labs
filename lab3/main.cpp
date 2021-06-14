@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <list>
 
 // ES 1
 
@@ -108,16 +109,39 @@ public:
     }
 };
 
+// ES 3
+
+class Process {
+    std::string name;
+    int pid, ppid, time;
+    std::list<std::string> opened_files;
+    std::list<std::string> mapped_files;
+
+    Process(std::string name) {
+        this->name = name;
+        this->pid = pid;
+        this->ppid = ppid;
+        this->time = time;
+    }
+public:
+    static void makeProcess(std::string name, std::weak_ptr<Process> ) {
+
+    }
+
+
+};
+
 void es1();
 void es2();
+void es3();
 
 int main() {
     std::cout << "ES 1" << std::endl;
     es1();
     std::cout << "ES 2" << std::endl;
     es2();
-
-
+    std::cout << "ES 3" << std::endl;
+    es3();
     return 0;
 }
 
@@ -156,10 +180,12 @@ void es2(){
     std::cout << msp6.use_count() << std::endl;
     std::cout << msp7.use_count() << std::endl;
 
-    /* BAD CODE */
-    //MyClass *mc = new MyClass();
-    //std::shared_ptr<MyClass> sp1 = std::shared_ptr<MyClass>(mc);
-    //std::shared_ptr<MyClass> sp2 = std::shared_ptr<MyClass>(mc);
+    /* BAD CODE *//*
+    MyClass *mc = new MyClass();
+    std::shared_ptr<MyClass> sp1 = std::shared_ptr<MyClass>(mc);
+    std::shared_ptr<MyClass> sp2 = std::shared_ptr<MyClass>(mc);
+    std::cout << sp1.use_count() << std::endl;
+    std::cout << sp2.use_count() << std::endl;*/
 
     /* TEST COPY ASSIGNMENT OPERATOR *//*
     std::shared_ptr<MyClass> sp1 = std::shared_ptr<MyClass>(new MyClass());
@@ -181,5 +207,15 @@ void es2(){
     std::cout << sp3.use_count() << std::endl;
     std::cout << sp4.use_count() << std::endl;
     std::cout << sp5.use_count() << std::endl;*/
+
+}
+
+void es3() {
+    std::list<Process*> lp;
+    Process *p1 = new Process("p1",42,0,999);
+    Process *p2 = new Process("p2",420,42,999);
+    lp.push_back(p1);
+    lp.push_back(p2);
+
 
 }
